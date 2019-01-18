@@ -1,9 +1,6 @@
 #![allow(proc_macro_derive_resolution_fallback)]
 
-use diesel::{
-  pg::Pg,
-  sql_types::*,
-};
+use diesel::{pg::Pg, sql_types::*};
 
 diesel_infix_operator!(Similarity, " % ", backend: Pg);
 

@@ -1,0 +1,33 @@
+[env]
+DATABASE_URL = "postgres://postgres@localhost/postgres"
+
+[config]
+on_error_task = "post-test"
+
+[tasks.test]
+command = "cargo"
+args = ["test"]
+dependencies = ["build", "diesel"]
+
+[tasks.pre-test]
+command = "docker-compose"
+args = ["up", "-d"]
+
+[tasks.post-test]
+command = "docker-compose"
+args = ["down"]
+
+[tasks.migrations]
+install_crate = { crate_name = "diesel_cli", binary = "diesel", test_arg = "--help", args = ["--no-default-features", "--features postgres"] }
+command = "diesel"
+args = ["migration", "run"]
+
+[tasks.diesel]
+install_crate = { crate_name = "diesel_cli", binary = "diesel", test_arg = "--help", args = ["--no-default-features", "--features postgres"] }
+command = "diesel"
+args = ["setup"]
+dependencies = ["sleep", "migrations"]
+
+[tasks.sleep]
+command = "sleep"
+args = ["2"]
