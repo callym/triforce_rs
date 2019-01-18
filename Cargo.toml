@@ -1,9 +1,9 @@
 [package]
-name = "diesel_pg_trgm"
+name = "triforce_rs"
 version = "0.0.1"
 authors = ["Callym <hi@callym.com>"]
-homepage = "https://github.com/callym/diesel_pg_trgm"
-repository = "https://github.com/callym/diesel_pg_trgm"
+homepage = "https://github.com/callym/triforce_rs"
+repository = "https://github.com/callym/triforce_rs"
 edition = "2018"
 exclude = ["src/schema.rs"]
 
