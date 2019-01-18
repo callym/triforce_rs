@@ -2,7 +2,10 @@
 name = "diesel_pg_trgm"
 version = "0.0.1"
 authors = ["Callym <hi@callym.com>"]
+homepage = "https://github.com/callym/diesel_pg_trgm"
+repository = "https://github.com/callym/diesel_pg_trgm"
 edition = "2018"
+exclude = ["src/schema.rs"]
 
 [dependencies]
 diesel = { version = "1.3", features = ["postgres"] }
