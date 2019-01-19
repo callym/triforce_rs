@@ -99,6 +99,40 @@ sql_function! {
   /// Concats all the strings in the array,
   /// using the supplied delimiter,
   /// so they can be used in a search query.
+  #[sql_name="f_concat_ws"]
+  fn concat_null(x: Text, y: Nullable<Text>) -> Text;
+}
+
+pub type ConcatNull<X, Y> = concat_null::HelperType<X, Y>;
+
+#[test]
+fn concat_null_test_null() {
+  use crate::test_utils::con;
+  use diesel::{self, prelude::*};
+
+  let res = diesel::select(concat_null("", Option::<&'static str>::None))
+    .first::<String>(&con())
+    .unwrap();
+
+  assert_eq!(res, "");
+}
+
+#[test]
+fn concat_null_test_some() {
+  use crate::test_utils::con;
+  use diesel::{self, prelude::*};
+
+  let res = diesel::select(concat_null("", Some("Hello, World!")))
+    .first::<String>(&con())
+    .unwrap();
+
+  assert_eq!(res, "Hello, World!");
+}
+
+sql_function! {
+  /// Concats all the strings in the array,
+  /// using the supplied delimiter,
+  /// so they can be used in a search query.
   #[sql_name="f_array_to_string"]
   fn array_to_string(x: Text, y: Array<Text>) -> Text;
 }
@@ -125,7 +159,6 @@ macro_rules! concat_ws {
       /// so they can be used in a search query.
       #[sql_name="f_concat_ws"]
       fn $name(ws: Text $(, $i: Text)*) -> Text;
-
     }
 
     #[allow(non_camel_case_types)]
@@ -147,14 +180,14 @@ fn concat_ws_test() {
 }
 
 #[cfg_attr(rustfmt, rustfmt_skip)]
-pub mod concat_ws {
+pub mod concat_ws_mod {
   use diesel::sql_types::*;
 
   concat_ws!(ConcatWs,   concat_ws,    a,  b| a,  b);
   concat_ws!(ConcatWs3,  concat_ws_3,  a, b, c| a, b, c);
-  concat_ws!(ConcatWs4,  concat_ws_4,  a, b, c,  d| a, b, c,  d);
-  concat_ws!(ConcatWs5,  concat_ws_5,  a, b, c,  d, e| a, b, c,  d, e);
-  concat_ws!(ConcatWs6,  concat_ws_6,  a, b, c,  d, e, f| a, b, c,  d, e, f);
+  concat_ws!(ConcatWs4,  concat_ws_4,  a, b, c, d| a, b, c, d);
+  concat_ws!(ConcatWs5,  concat_ws_5,  a, b, c, d, e| a, b, c, d, e);
+  concat_ws!(ConcatWs6,  concat_ws_6,  a, b, c, d, e, f| a, b, c, d, e, f);
   concat_ws!(ConcatWs7,  concat_ws_7,  a, b, c, d, e, f, g| a, b, c, d, e, f, g);
   concat_ws!(ConcatWs8,  concat_ws_8,  a, b, c, d, e, f, g, h| a, b, c, d, e, f, g, h);
   concat_ws!(ConcatWs9,  concat_ws_9,  a, b, c, d, e, f, g, h, i| a, b, c, d, e, f, g, h, i);
@@ -177,4 +210,4 @@ pub mod concat_ws {
   concat_ws!(ConcatWs26, concat_ws_26, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z| a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z);
 }
 
-pub use concat_ws::*;
+pub use concat_ws_mod::*;
