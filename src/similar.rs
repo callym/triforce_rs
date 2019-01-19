@@ -9,7 +9,7 @@ use diesel::{
 
 type ArrayToStringTy<T> = ArrayToString<<&'static str as AsExpression<Text>>::Expression, T>;
 
-pub trait TrgmQueryExtensions: Expression<SqlType = Text> + Sized {
+pub trait TrgmQueryExtensions: Expression + Sized {
   fn similar_to<T: AsExpression<Text>>(self, other: T) -> Similarity<Self, T::Expression> {
     Similarity::new(self, other.as_expression())
   }
@@ -33,7 +33,12 @@ pub trait TrgmQueryExtensions: Expression<SqlType = Text> + Sized {
   }
 }
 
-impl<T: Expression<SqlType = Text>> TrgmQueryExtensions for T {}
+pub trait TrgmQueryExtensionsInner {}
+
+impl TrgmQueryExtensionsInner for Text {}
+impl TrgmQueryExtensionsInner for Nullable<Text> {}
+
+impl<U: TrgmQueryExtensionsInner, T: Expression<SqlType = U>> TrgmQueryExtensions for T {}
 
 pub trait TrgmQueryArrayExtensions: Expression<SqlType = Array<Text>> + Sized {
   fn similar_to_any<T: AsExpression<Text>>(self, other: T) -> Similarity<T::Expression, Any<Self>> {
@@ -45,6 +50,25 @@ impl<T: Expression<SqlType = Array<Text>>> TrgmQueryArrayExtensions for T {}
 
 #[test]
 fn similarity_test() {
+  use crate::schema::test_similarity::dsl::*;
+  use crate::test_utils::*;
+  use diesel::prelude::*;
+
+  let test_string = "similar";
+
+  let res: Vec<_> = test_similarity
+    .filter(test_case.similar_to(test_string))
+    .load::<TestSimilarity>(&con())
+    .unwrap()
+    .into_iter()
+    .map(|r| r.test_case)
+    .collect();
+
+  assert_eq!(res, vec!["similar"]);
+}
+
+#[test]
+fn distance_test() {
   use crate::schema::test_similarity::dsl::*;
   use crate::test_utils::*;
   use diesel::prelude::*;
