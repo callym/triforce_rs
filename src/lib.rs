@@ -13,7 +13,8 @@ pub mod types;
 pub mod similar;
 
 pub use functions::*;
-pub use similar::TrgmQueryExtensions; // As long as the value inside the `Mutex` is false, we wait.
+pub use predicates::*;
+pub use similar::*;
 
 pub fn init(conn: &diesel::PgConnection) -> diesel::QueryResult<()> {
   use diesel::connection::SimpleConnection;
