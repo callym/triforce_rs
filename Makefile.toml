@@ -1,5 +1,9 @@
 [env]
-DATABASE_URL = "postgres://postgres@localhost/postgres"
+DATABASE_URL = { script = [ '''
+[ "$CARGO_MAKE_CI" = true ] &&
+   echo "postgres://postgres@docker/postgres" ||
+   echo "postgres://postgres@localhost/postgres"
+''' ]}
 
 [config]
 on_error_task = "post-test"
@@ -7,7 +11,22 @@ on_error_task = "post-test"
 [tasks.test]
 command = "cargo"
 args = ["test"]
-dependencies = ["build", "diesel"]
+dependencies = ["diesel", "test-init"]
+
+[tasks.test-verbose]
+command = "cargo"
+args = ["test", "--verbose"]
+dependencies = ["diesel", "test-verbose-init"]
+
+[tasks.test-init]
+command = "cargo"
+args = ["test", "--", "--ignored"]
+dependencies = ["diesel"]
+
+[tasks.test-verbose-init]
+command = "cargo"
+args = ["test", "--verbose", "--", "--ignored"]
+dependencies = ["diesel"]
 
 [tasks.pre-test]
 command = "docker-compose"
@@ -31,3 +50,9 @@ dependencies = ["sleep", "migrations"]
 [tasks.sleep]
 command = "sleep"
 args = ["2"]
+
+[tasks.pre-test-verbose]
+alias = "pre-test"
+
+[tasks.post-test-verbose]
+alias = "post-test"

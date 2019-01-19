@@ -2,9 +2,6 @@
 
 #[macro_use]
 extern crate diesel;
-#[cfg(test)]
-#[macro_use]
-extern crate lazy_static;
 
 pub mod functions;
 pub mod predicates;
@@ -29,11 +26,7 @@ pub mod test_utils;
 pub mod schema;
 
 #[test]
+#[ignore]
 pub fn init_test() {
-  init(&test_utils::con_init()).expect("pg_trgm::init failed");
-
-  let &(ref lock, ref cvar) = &*test_utils::INIT;
-  let mut started = lock.lock().unwrap();
-  *started = true;
-  cvar.notify_all();
+  init(&test_utils::con()).expect("pg_trgm::init failed");
 }
