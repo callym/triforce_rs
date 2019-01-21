@@ -110,7 +110,8 @@ fn concat_null_test_null() {
   use crate::test_utils::con;
   use diesel::{self, prelude::*};
 
-  let res = diesel::select(concat_null("", Option::<&'static str>::None))
+  let null: Option<&str> = None;
+  let res = diesel::select(concat_null("", null))
     .first::<String>(&con())
     .unwrap();
 
