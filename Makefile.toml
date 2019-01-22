@@ -1,6 +1,6 @@
 [env]
 DATABASE_URL = { script = [ '''
-[ "$CARGO_MAKE_CI" = true ] &&
+[ "$CARGO_MAKE_CI" = "TRUE" ] &&
    echo "postgres://postgres@docker/postgres" ||
    echo "postgres://postgres@localhost/postgres"
 ''' ]}
